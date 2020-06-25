@@ -1,0 +1,118 @@
+import sys
+from PyQt5.QtWidgets import QMessageBox,QLineEdit ,QMainWindow,QApplication,QWidget,QLabel,QPushButton,QDesktopWidget,QTextEdit
+from PyQt5.QtCore import Qt
+
+from discord_webhook import DiscordWebhook
+webhook_urls = []
+webhook_content = []
+
+class Project1(QMainWindow,QWidget):
+    global webhook_urls
+    global webhook_content
+
+    def __init__(self):
+        super().__init__()
+        self.setFixedSize(400, 250)
+
+        self.setWindowTitle('Form1 - Dior#4936')
+        self.setGeometry(500, 350, 400, 150)
+        self.center()
+
+        self.initUI()
+
+    def initUI(self):
+        global qle1
+        global qle2
+        global qle1_result
+        global qle2_result
+
+        label1 = QLabel('WebHook URL :', self)
+        label1.setAlignment(Qt.AlignCenter)
+        label1.move(0,220)
+
+        btn1 = QPushButton('홍보하기',self)
+        btn1.resize(400, 32)
+        btn1.move(0, 185)
+        btn1.clicked.connect(self.advertise_on_click)
+
+        btn2 = QPushButton('URL 등록', self)
+        btn2.resize(70, 22)
+        btn2.move(327, 224)
+        btn2.clicked.connect(self.url1_on_click)
+
+        label2 = QLabel('Content : ', self)
+        label2.setAlignment(Qt.AlignCenter)
+        label2.move(-15, 0)
+
+        btn3 = QPushButton('Content 등록', self)
+        btn3.resize(80, 30)
+        btn3.move(316, 28)
+        btn3.clicked.connect(self.content1_on_click)
+
+        btn4 = QPushButton('Content 삭제',self)
+        btn4.resize(80, 30)
+        btn4.move(316, 69)
+        btn4.clicked.connect(self.content2_on_click)
+
+        btn5 = QPushButton('list URL 삭제',self)
+        btn5.resize(80, 30)
+        btn5.move(316, 108)
+        btn5.clicked.connect(self.list_URL1_on_click)
+
+        btn6 = QPushButton('list 컨텐츠 삭제', self)
+        btn6.resize(88, 30)
+        btn6.move(312, 148)
+        btn6.clicked.connect(self.list_content1_on_click)
+
+        qle1 = QLineEdit(self)
+        qle1.resize(225,20)
+        qle1.move(98, 225)
+        qle1_result = qle1
+
+        qle2 = QTextEdit(self)
+        qle2.resize(310,150)
+        qle2.move(0,27)
+        qle2_result = qle2
+
+        self.show()
+
+    def url1_on_click(self):
+        webhook_urls.append(qle1_result.text())
+        QMessageBox.about(self,"메세지", "URL 등록 완료")
+        print(webhook_urls)
+
+    def content1_on_click(self):
+        webhook_content.append(qle2_result.toPlainText())
+        QMessageBox.about(self,"메세지","Content 등록완료")
+        print(webhook_content)
+
+    def content2_on_click(self):
+        qle2.clear()
+        QMessageBox.about(self, "메세지", "Content 삭제완료")
+
+    def list_content1_on_click(self):
+        del webhook_content[0:]
+        QMessageBox.about(self, "메세지", "list URL 삭제완료")
+
+    def list_URL1_on_click(self):
+        del webhook_urls[0:]
+        QMessageBox.about(self, "메세지", "list 컨텐츠 삭제완료")
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def advertise_on_click(self):
+        global response
+        global webhook
+
+        webhook = webhook = DiscordWebhook(url=webhook_urls, content=webhook_content[0])
+
+        response = webhook.execute()
+
+if __name__ == '__main__':
+   app = QApplication(sys.argv)
+   ex = Project1()
+   sys.exit(app.exec_())
